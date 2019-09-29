@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Oleg Boulanov</Authors>
+    <Company>uselessextras</Company>
+    <Description>Simple C# scheduling library</Description>
+    <Copyright />
   </PropertyGroup>
 
 </Project>
