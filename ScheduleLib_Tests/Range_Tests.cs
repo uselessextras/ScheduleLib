@@ -12,7 +12,7 @@ namespace ScheduleLib_Tests
     public class Range_Tests
     {
         Range r_09_11 = new Range(DateTimeOffset.Parse("1/1/2020 09:00:00"), DateTimeOffset.Parse("3/1/2020 11:00:00"));
-        [Test]
+        //[Test]
         public void Simple()
         {
             var nexton = r_09_11.NextOn(DateTimeOffset.Parse("1/1/2020 08:00:00"), 1);
