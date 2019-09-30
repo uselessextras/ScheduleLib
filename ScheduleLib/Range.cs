@@ -50,7 +50,7 @@ namespace ScheduleLib
                 if (0 < MonthDays && (MonthDays & (1 << (int)nd.Day - 1)) == 0) continue;
                 if (0 < Months && (Months & (1 << (int)nd.Month - 1)) == 0) continue;
                 if (tbeg == TimeSpan.Zero && tend == TimeSpan.Zero) return nd;
-                var t = 0 < n ? dt.TimeOfDay : TimeSpan.Zero;
+                var t = 0 < n ? TimeSpan.Zero : dt.TimeOfDay;
                 if (tbeg <= tend)
                 {
                     // daytime range, includes starting at midnight
@@ -76,8 +76,8 @@ namespace ScheduleLib
             var nt = DateTimeOffset.MinValue;
             if (DateTimeOffset.MinValue < dbeg || DateTimeOffset.MinValue < dend || TimeSpan.Zero < tend)
             {
-                // find inverted range beginning
-                nt = tbeg == tend ? dend.AddTicks(tbeg.Ticks) : new Range(dbeg.AddTicks(tend.Ticks), dend.AddTicks(tbeg.Ticks)).NextOn(dt, days);
+                // (inverted range)  .NextOn()
+                nt = tbeg == tend ? dend.AddTicks(tbeg.Ticks /*+ TimeSpan.TicksPerDay*/) : new Range(dbeg.AddTicks(tend.Ticks), dend.AddTicks(tbeg.Ticks)).NextOn(dt, days);
             }
             if (0 != WeekDays)
             {
