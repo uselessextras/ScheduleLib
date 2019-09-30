@@ -17,14 +17,10 @@ namespace ScheduleLib
             Begin = begin;
             End = end;
         }
-        public bool Enter(DateTimeOffset dt, Plan plan)
+        public Span(Span span)
         {
-            if (Begin < dt && End <= dt && plan != null)
-            {
-                int days = 2;
-                Span gate = plan.Next(dt, days);
-            }
-            return Begin <= dt && dt < End;
+            Begin = span.Begin;
+            End = span.End;
         }
         /// <summary>
         /// Strict precedence, may or may not overlap

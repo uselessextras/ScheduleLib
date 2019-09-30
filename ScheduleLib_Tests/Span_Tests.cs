@@ -34,6 +34,11 @@ namespace ScheduleLib_Tests
             Assert.IsTrue(s_09_11 <= s_11_13);
             Assert.IsTrue(s_09_11 < s_10_12);
             Assert.IsTrue(s_09_11 <= s_10_12);
+            var s = new Span(s_09_10);
+            Assert.IsTrue(s.Equals(s_09_10));
+            Assert.IsTrue(s == s_09_10);
+            Assert.IsTrue(s != s_09_11);
+            Assert.IsFalse(s == s_09_11);
         }
         [Test]
         public void Join()

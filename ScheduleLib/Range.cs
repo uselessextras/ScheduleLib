@@ -33,19 +33,21 @@ namespace ScheduleLib
             Begin = begin;
             End = end;
         }
-        public Range(TimeSpan begin, TimeSpan end)
+        public Range(Range r)
         {
-            Begin = DateTimeOffset.MinValue.Add(begin);
-            End = DateTimeOffset.MinValue.Add(end);
+            Begin = r.Begin;
+            End = r.End;
+            WeekDays = r.WeekDays;
+            MonthDays = r.MonthDays;
+            Months = r.Months;
         }
-
         public DateTimeOffset NextOn(DateTimeOffset dt, int days)
         {
             var nd = dt.Date;
             for (var n = 0; n < days; n++, nd = nd.AddDays(1))
             {
                 if (nd.Date < dbeg) continue;
-                if (DateTimeOffset.MinValue < dend && dend < nd.Date) continue;
+                if (IsDateSet(dend) && dend < nd.Date) continue;
                 if (0 < WeekDays && (WeekDays & (1 << (int)nd.DayOfWeek)) == 0) continue;
                 if (0 < MonthDays && (MonthDays & (1 << (int)nd.Day - 1)) == 0) continue;
                 if (0 < Months && (Months & (1 << (int)nd.Month - 1)) == 0) continue;
@@ -74,7 +76,7 @@ namespace ScheduleLib
         public DateTimeOffset NextOff(DateTimeOffset dt, int days)
         {
             var nt = DateTimeOffset.MinValue;
-            if (DateTimeOffset.MinValue < dbeg || DateTimeOffset.MinValue < dend || TimeSpan.Zero < tend)
+            if (IsDateSet(dbeg) || IsDateSet(dend) || TimeSpan.Zero < tend)
             {
                 // (inverted range)  .NextOn()
                 nt = tbeg == tend ? dend.AddTicks(tbeg.Ticks /*+ TimeSpan.TicksPerDay*/) : new Range(dbeg.AddTicks(tend.Ticks), dend.AddTicks(tbeg.Ticks)).NextOn(dt, days);
@@ -105,5 +107,7 @@ namespace ScheduleLib
             if (DateTimeOffset.MinValue == dateTimeOff) dateTimeOff = dateTimeOn.Date.AddDays(days);
             return new Span(dateTimeOn, dateTimeOff);
         }
+        // to ignore shift
+        public static bool IsDateSet(DateTimeOffset dto) { return 24 <= (dto - DateTimeOffset.MinValue).TotalHours; }
     }
 }
