@@ -8,31 +8,12 @@ namespace ScheduleLib
 {
     public class Range
     {
-        DateTimeOffset dbeg, dend;
-        TimeSpan tbeg, tend;
-        public DateTimeOffset Begin
-        {
-            get { return dbeg.AddTicks(tbeg.Ticks); }
-            set { dbeg = value.Date; tbeg = value.TimeOfDay; }
-        }
-        public DateTimeOffset End
-        {
-            get { return dend.AddTicks(tend.Ticks); }
-            set { dend = value.Date; tend = value.TimeOfDay; }
-        }
+        public DateTimeOffset Begin { get; set; } = DateTimeOffset.MinValue;
+        public DateTimeOffset End { get; set; } = DateTimeOffset.MinValue;
         public byte WeekDays { get; set; } = 0;
         public uint MonthDays { get; set; } = 0;
         public ushort Months { get; set; } = 0;
-
-        public Range()
-        {
-            Begin = End = DateTimeOffset.MinValue;
-        }
-        public Range(DateTimeOffset begin, DateTimeOffset end)
-        {
-            Begin = begin;
-            End = end;
-        }
+        public Range() { }
         public Range(Range r)
         {
             Begin = r.Begin;
@@ -46,29 +27,29 @@ namespace ScheduleLib
             var nd = dt.Date;
             for (var n = 0; n < days; n++, nd = nd.AddDays(1))
             {
-                if (nd.Date < dbeg) continue;
-                if (IsDateSet(dend) && dend < nd.Date) continue;
+                if (nd.Date < Begin.Date) continue;
+                if (End.Date < nd.Date) continue;
                 if (0 < WeekDays && (WeekDays & (1 << (int)nd.DayOfWeek)) == 0) continue;
                 if (0 < MonthDays && (MonthDays & (1 << (int)nd.Day - 1)) == 0) continue;
                 if (0 < Months && (Months & (1 << (int)nd.Month - 1)) == 0) continue;
-                if (tbeg == TimeSpan.Zero && tend == TimeSpan.Zero) return nd;
+                if (Begin.TimeOfDay == TimeSpan.Zero && End.TimeOfDay == TimeSpan.Zero) return nd;
                 var t = 0 < n ? TimeSpan.Zero : dt.TimeOfDay;
-                if (tbeg <= tend)
+                if (Begin.TimeOfDay <= End.TimeOfDay)
                 {
                     // daytime range, includes starting at midnight
-                    if (tend <= t) continue;    // over for today
-                    if (t < tbeg) return nd.AddTicks(tbeg.Ticks);
+                    if (End.TimeOfDay <= t) continue;    // over for today
+                    if (t < Begin.TimeOfDay) return nd.Add(Begin.TimeOfDay);
                 }
-                else if (tend != TimeSpan.Zero)
+                else if (TimeSpan.Zero < End.TimeOfDay)
                 {
                     // nighttime range
-                    if (t < tend) return nd.AddDays(1);    //active yet, return midnight
-                    if (t < tbeg) return nd.AddTicks(tbeg.Ticks);
+                    if (t < End.TimeOfDay) return nd.AddDays(1);    //active yet, return midnight
+                    if (t < Begin.TimeOfDay) return nd.Add(Begin.TimeOfDay);
                 }
                 else
                 {
                     // ending at midnight
-                    if (t < tbeg) return nd.AddTicks(tbeg.Ticks);
+                    if (t < Begin.TimeOfDay) return nd.Add(Begin.TimeOfDay);
                 }
             }
             return DateTimeOffset.MinValue;
@@ -76,38 +57,32 @@ namespace ScheduleLib
         public DateTimeOffset NextOff(DateTimeOffset dt, int days)
         {
             var nt = DateTimeOffset.MinValue;
-            if (IsDateSet(dbeg) || IsDateSet(dend) || TimeSpan.Zero < tend)
+            if (Begin.TimeOfDay != End.TimeOfDay)
             {
-                // (inverted range)  .NextOn()
-                nt = tbeg == tend ? dend.AddTicks(tbeg.Ticks /*+ TimeSpan.TicksPerDay*/) : new Range(dbeg.AddTicks(tend.Ticks), dend.AddTicks(tbeg.Ticks)).NextOn(dt, days);
+                // (complement range)  .NextOn()
+                nt = new Range { Begin = Begin.Date.Add(End.TimeOfDay), End = End.Date.Add(Begin.TimeOfDay) }.NextOn(dt, days);
+            }
+            else
+            {
+                // 
+                nt = End;
             }
             if (0 != WeekDays)
             {
-                var nd = new Range() { WeekDays = (byte)~WeekDays }.NextOn(dt, days);
+                var nd = new Range { WeekDays = (byte)~WeekDays }.NextOn(dt, days);
                 if (nt == DateTimeOffset.MinValue || (DateTimeOffset.MinValue < nd && nd < nt)) nt = nd;
             }
-            if(0 != MonthDays)
+            if (0 != MonthDays)
             {
-                var nd = new Range() { MonthDays = (uint)~MonthDays }.NextOn(dt, days);
+                var nd = new Range { MonthDays = (uint)~MonthDays }.NextOn(dt, days);
                 if (nt == DateTimeOffset.MinValue || (DateTimeOffset.MinValue < nd && nd < nt)) nt = nd;
             }
             if (0 != Months)
             {
-                var nd = new Range() { Months = (ushort)~Months }.NextOn(dt, days);
-                if (nt == DateTimeOffset.MinValue || ( DateTimeOffset.MinValue < nd && nd < nt)) nt = nd;
+                var nd = new Range { Months = (ushort)~Months }.NextOn(dt, days);
+                if (nt == DateTimeOffset.MinValue || (DateTimeOffset.MinValue < nd && nd < nt)) nt = nd;
             }
             return nt;
         }
-        public Span NextRange(DateTimeOffset dt, int days)
-        {
-            if (DateTimeOffset.MinValue == Begin && DateTimeOffset.MinValue == End && 0 == WeekDays && 0 == MonthDays && 0 == Months) return Span.Null;
-            DateTimeOffset dateTimeOn = NextOn(dt, days);
-            if (DateTimeOffset.MinValue == dateTimeOn) return Span.Null;
-            DateTimeOffset dateTimeOff = NextOff(dateTimeOn.AddTicks(1), days);
-            if (DateTimeOffset.MinValue == dateTimeOff) dateTimeOff = dateTimeOn.Date.AddDays(days);
-            return new Span(dateTimeOn, dateTimeOff);
-        }
-        // to ignore shift
-        public static bool IsDateSet(DateTimeOffset dto) { return 24 <= (dto - DateTimeOffset.MinValue).TotalHours; }
     }
 }

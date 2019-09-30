@@ -14,21 +14,29 @@ namespace ScheduleLib
         {
             var span = Span.Null;
             if (DateTimeOffset.MinValue == dt) return span;
-            foreach(var r in Enable)
+            foreach(var re in Enable)
             {
-                var next = r.NextRange(dt, days);
+                var next = Next(re, dt, days);
                 if (next.IsEmpty) continue;
                 if (span.IsEmpty) span = next;
                 else span += next;
             }
-            foreach(var r in Disable)
+            foreach(var rd in Disable)
             {
-                var next = r.NextRange(dt, days);
+                var next = Next(rd, dt, days);
                 if (next.IsEmpty) continue;
                 span -= next;
                 if (span.IsEmpty || span.End <= dt) return Next(next.End.AddTicks(1), days);
             }
             return span;
+        }
+        public Span Next(Range range, DateTimeOffset dt, int days)
+        {
+            var on = range.NextOn(dt, days);
+            if (on < dt) return Span.Null;
+            var off = range.NextOff(on.AddTicks(1), days);
+            if (off < on) off = on.Date.AddDays(days);
+            return new Span(on, off);
         }
     }
 }

@@ -11,7 +11,6 @@ namespace ScheduleLib
         public DateTimeOffset Begin { get; set; }
         public DateTimeOffset End { get; set; }
         public bool IsEmpty { get { return End <= Begin; } }
-        public bool IsNull { get { return IsEmpty && Begin == DateTimeOffset.MinValue; } }
         public Span(DateTimeOffset begin, DateTimeOffset end)
         {
             Begin = begin;

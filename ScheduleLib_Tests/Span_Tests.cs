@@ -15,7 +15,6 @@ namespace ScheduleLib_Tests
         public void Null()
         {
             Assert.IsTrue(Span.Null.IsEmpty);
-            Assert.IsTrue(Span.Null.IsNull);
         }
         readonly Span s_09_10 = new Span(DateTime.Parse("1/1/2020 09:00:00"), DateTime.Parse("1/1/2020 10:00:00"));
         readonly Span s_09_11 = new Span(DateTime.Parse("1/1/2020 09:00:00"), DateTime.Parse("1/1/2020 11:00:00"));
