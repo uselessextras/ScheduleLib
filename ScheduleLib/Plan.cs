@@ -30,7 +30,7 @@ namespace ScheduleLib
             }
             return span;
         }
-        public Span Next(Range range, DateTimeOffset dt, int days)
+        public static Span Next(Range range, DateTimeOffset dt, int days)
         {
             var on = range.NextOn(dt, days);
             if (on < dt) return Span.Null;

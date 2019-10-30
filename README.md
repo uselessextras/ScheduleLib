@@ -1,5 +1,5 @@
 # ScheduleLib
-Simple scheduling library
+Simple scheduling library - reincarnation of my 20 year old project
 
 Current status
     master:

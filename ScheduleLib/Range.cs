@@ -56,16 +56,11 @@ namespace ScheduleLib
         }
         public DateTimeOffset NextOff(DateTimeOffset dt, int days)
         {
-            var nt = DateTimeOffset.MinValue;
+            var nt = End;
             if (Begin.TimeOfDay != End.TimeOfDay)
             {
-                // (complement range)  .NextOn()
+                // <complement range>.NextOn()
                 nt = new Range { Begin = Begin.Date.Add(End.TimeOfDay), End = End.Date.Add(Begin.TimeOfDay) }.NextOn(dt, days);
-            }
-            else
-            {
-                // 
-                nt = End;
             }
             if (0 != WeekDays)
             {
