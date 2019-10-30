@@ -4,7 +4,7 @@ using System.Text;
 
 using NUnit.Framework;
 
-using ScheduleLib;
+using UselessExtras.ScheduleLib;
 
 namespace ScheduleLib_Tests
 {
