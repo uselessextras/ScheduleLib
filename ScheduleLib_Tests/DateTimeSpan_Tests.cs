@@ -9,21 +9,21 @@ using ScheduleLib;
 namespace ScheduleLib_Tests
 {
     [TestFixture]
-    public class Span_Tests
+    public class DateTimeSpan_Tests
     {
         [Test]
         public void Null()
         {
-            Assert.IsTrue(Span.Null.IsEmpty);
+            Assert.IsTrue(DateTimeSpan.Null.IsEmpty);
         }
-        readonly Span s_09_10 = new Span(DateTime.Parse("1/1/2020 09:00:00"), DateTime.Parse("1/1/2020 10:00:00"));
-        readonly Span s_09_11 = new Span(DateTime.Parse("1/1/2020 09:00:00"), DateTime.Parse("1/1/2020 11:00:00"));
-        readonly Span s_09_13 = new Span(DateTime.Parse("1/1/2020 09:00:00"), DateTime.Parse("1/1/2020 13:00:00"));
-        readonly Span s_10_11 = new Span(DateTime.Parse("1/1/2020 10:00:00"), DateTime.Parse("1/1/2020 11:00:00"));
-        readonly Span s_11_13 = new Span(DateTime.Parse("1/1/2020 11:00:00"), DateTime.Parse("1/1/2020 13:00:00"));
-        readonly Span s_10_12 = new Span(DateTime.Parse("1/1/2020 10:00:00"), DateTime.Parse("1/1/2020 12:00:00"));
-        readonly Span s_10_13 = new Span(DateTime.Parse("1/1/2020 10:00:00"), DateTime.Parse("1/1/2020 13:00:00"));
-        readonly Span s_12_13 = new Span(DateTime.Parse("1/1/2020 12:00:00"), DateTime.Parse("1/1/2020 13:00:00"));
+        readonly DateTimeSpan s_09_10 = new DateTimeSpan(DateTime.Parse("1/1/2020 09:00:00"), DateTime.Parse("1/1/2020 10:00:00"));
+        readonly DateTimeSpan s_09_11 = new DateTimeSpan(DateTime.Parse("1/1/2020 09:00:00"), DateTime.Parse("1/1/2020 11:00:00"));
+        readonly DateTimeSpan s_09_13 = new DateTimeSpan(DateTime.Parse("1/1/2020 09:00:00"), DateTime.Parse("1/1/2020 13:00:00"));
+        readonly DateTimeSpan s_10_11 = new DateTimeSpan(DateTime.Parse("1/1/2020 10:00:00"), DateTime.Parse("1/1/2020 11:00:00"));
+        readonly DateTimeSpan s_11_13 = new DateTimeSpan(DateTime.Parse("1/1/2020 11:00:00"), DateTime.Parse("1/1/2020 13:00:00"));
+        readonly DateTimeSpan s_10_12 = new DateTimeSpan(DateTime.Parse("1/1/2020 10:00:00"), DateTime.Parse("1/1/2020 12:00:00"));
+        readonly DateTimeSpan s_10_13 = new DateTimeSpan(DateTime.Parse("1/1/2020 10:00:00"), DateTime.Parse("1/1/2020 13:00:00"));
+        readonly DateTimeSpan s_12_13 = new DateTimeSpan(DateTime.Parse("1/1/2020 12:00:00"), DateTime.Parse("1/1/2020 13:00:00"));
         [Test]
         public void Compare()
         {
@@ -33,7 +33,7 @@ namespace ScheduleLib_Tests
             Assert.IsTrue(s_09_11 <= s_11_13);
             Assert.IsTrue(s_09_11 < s_10_12);
             Assert.IsTrue(s_09_11 <= s_10_12);
-            var s = new Span(s_09_10);
+            var s = new DateTimeSpan(s_09_10);
             Assert.IsTrue(s.Equals(s_09_10));
             Assert.IsTrue(s == s_09_10);
             Assert.IsTrue(s != s_09_11);
@@ -55,7 +55,7 @@ namespace ScheduleLib_Tests
             Assert.IsTrue(s_09_10 - s_11_13 == s_09_10);
             Assert.IsTrue(s_11_13 - s_09_10 == s_11_13);
             Assert.IsTrue(s_09_13 - s_10_11 == s_09_10);
-            Assert.IsTrue(s_10_11 - s_09_13 == Span.Null);
+            Assert.IsTrue(s_10_11 - s_09_13 == DateTimeSpan.Null);
         }
     }
 }

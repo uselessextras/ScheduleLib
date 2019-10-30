@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace ScheduleLib
 {
-    public class Range
+    public class DateTimeRange
     {
         public DateTimeOffset Begin { get; set; } = DateTimeOffset.MinValue;
         public DateTimeOffset End { get; set; } = DateTimeOffset.MinValue;
         public byte WeekDays { get; set; } = 0;
         public uint MonthDays { get; set; } = 0;
         public ushort Months { get; set; } = 0;
-        public Range() { }
-        public Range(Range r)
+        public DateTimeRange() { }
+        public DateTimeRange(DateTimeRange r)
         {
             Begin = r.Begin;
             End = r.End;
@@ -60,21 +60,21 @@ namespace ScheduleLib
             if (Begin.TimeOfDay != End.TimeOfDay)
             {
                 // <complement range>.NextOn()
-                nt = new Range { Begin = Begin.Date.Add(End.TimeOfDay), End = End.Date.Add(Begin.TimeOfDay) }.NextOn(dt, days);
+                nt = new DateTimeRange { Begin = Begin.Date.Add(End.TimeOfDay), End = End.Date.Add(Begin.TimeOfDay) }.NextOn(dt, days);
             }
             if (0 != WeekDays)
             {
-                var nd = new Range { WeekDays = (byte)~WeekDays }.NextOn(dt, days);
+                var nd = new DateTimeRange { WeekDays = (byte)~WeekDays }.NextOn(dt, days);
                 if (nt == DateTimeOffset.MinValue || (DateTimeOffset.MinValue < nd && nd < nt)) nt = nd;
             }
             if (0 != MonthDays)
             {
-                var nd = new Range { MonthDays = (uint)~MonthDays }.NextOn(dt, days);
+                var nd = new DateTimeRange { MonthDays = (uint)~MonthDays }.NextOn(dt, days);
                 if (nt == DateTimeOffset.MinValue || (DateTimeOffset.MinValue < nd && nd < nt)) nt = nd;
             }
             if (0 != Months)
             {
-                var nd = new Range { Months = (ushort)~Months }.NextOn(dt, days);
+                var nd = new DateTimeRange { Months = (ushort)~Months }.NextOn(dt, days);
                 if (nt == DateTimeOffset.MinValue || (DateTimeOffset.MinValue < nd && nd < nt)) nt = nd;
             }
             return nt;
